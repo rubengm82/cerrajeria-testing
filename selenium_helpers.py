@@ -47,25 +47,30 @@ def login(driver, email=DEFAULT_EMAIL, password=DEFAULT_PASSWORD):
     accept_cookies_if_visible(driver)
 
     email_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/form/input[1]'))
+        EC.element_to_be_clickable((By.ID, "signin-email"))
     )
     email_input.clear()
     email_input.send_keys(email)
     print("Email entered")
 
-    password_input = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/input[2]')
+    password_input = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "signin-password"))
+    )
     password_input.clear()
     password_input.send_keys(password)
     print("Password entered")
 
-    login_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/form/button[1]')
+    login_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "form.auth-card button[type='submit']"))
+    )
     login_button.click()
     print("Login button clicked")
 
     WebDriverWait(driver, 10).until(EC.url_changes(f"{BASE_URL}/login"))
     WebDriverWait(driver, 10).until(
         lambda current_driver: current_driver.execute_script(
-            "return window.localStorage.getItem('token') !== null"
+            "return window.localStorage.getItem('token') !== null && "
+            "window.localStorage.getItem('user') !== null"
         )
     )
     print(f"Current URL: {driver.current_url}")
